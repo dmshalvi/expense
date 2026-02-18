@@ -1,55 +1,62 @@
 import React, { useState } from 'react';
-import './App.css';
-import TransactionForm from './components/TransactionForm';
-import TransactionList from './components/TransactionList';
-import Summary from './components/Summary';
 
-function App() {
-  const [transactions, setTransactions] = useState([]);
-
-  const addTransaction = (transaction) => {
-    const newTransaction = {
-      ...transaction,
-      id: Date.now(),
+const App = () => {
+    const [expenses, setExpenses] = useState([]);
+    
+    const addExpense = (expense) => {
+        setExpenses([...expenses, expense]);
     };
-    setTransactions([newTransaction, ...transactions]);
-  };
+    
+    return (
+        <div>
+            <h1>Expense Tracker</h1>
+            <ExpenseForm addExpense={addExpense} />
+            <ExpenseList expenses={expenses} />
+        </div>
+    );
+};
 
-  const deleteTransaction = (id) => {
-    setTransactions(transactions.filter(transaction => transaction.id !== id));
-  };
+const ExpenseForm = ({ addExpense }) => {
+    const [description, setDescription] = useState('');
+    const [amount, setAmount] = useState('');
+    
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const expense = { description, amount: parseFloat(amount) };
+        addExpense(expense);
+        setDescription('');
+        setAmount('');
+    };
+    
+    return (
+        <form onSubmit={handleSubmit}>
+            <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description"
+                required
+            />
+            <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Amount"
+                required
+            />
+            <button type="submit">Add Expense</button>
+        </form>
+    );
+};
 
-  // Calculate totals
-  const totalIncome = transactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-
-  const totalExpenses = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-
-  const totalBalance = totalIncome - totalExpenses;
-
-  return (
-    <div className="app">
-      <div className="container">
-        <h1>💰 Expense Tracker</h1>
-        
-        <Summary 
-          balance={totalBalance}
-          income={totalIncome}
-          expenses={totalExpenses}
-        />
-
-        <TransactionForm onAddTransaction={addTransaction} />
-
-        <TransactionList 
-          transactions={transactions}
-          onDeleteTransaction={deleteTransaction}
-        />
-      </div>
-    </div>
-  );
-}
+const ExpenseList = ({ expenses }) => {
+    return (
+        <ul>
+            {expenses.map((expense, index) => (
+                <li key={index}>{expense.description}: ${expense.amount}</li>
+            ))}
+        </ul>
+    );
+};
 
 export default App;
