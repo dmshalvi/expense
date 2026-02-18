@@ -1,62 +1,43 @@
 import React, { useState } from 'react';
+import './App.css';
 
-const App = () => {
-    const [expenses, setExpenses] = useState([]);
-    
-    const addExpense = (expense) => {
-        setExpenses([...expenses, expense]);
-    };
-    
-    return (
-        <div>
-            <h1>Expense Tracker</h1>
-            <ExpenseForm addExpense={addExpense} />
-            <ExpenseList expenses={expenses} />
-        </div>
-    );
-};
+function App() {
+  const [expenses, setExpenses] = useState([]);
+  const [newExpense, setNewExpense] = useState({ description: '', amount: '' });
 
-const ExpenseForm = ({ addExpense }) => {
-    const [description, setDescription] = useState('');
-    const [amount, setAmount] = useState('');
-    
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const expense = { description, amount: parseFloat(amount) };
-        addExpense(expense);
-        setDescription('');
-        setAmount('');
-    };
-    
-    return (
-        <form onSubmit={handleSubmit}>
-            <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Description"
-                required
-            />
-            <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Amount"
-                required
-            />
-            <button type="submit">Add Expense</button>
-        </form>
-    );
-};
+  const addExpense = (e) => {
+    e.preventDefault();
+    setExpenses([...expenses, newExpense]);
+    setNewExpense({ description: '', amount: '' });
+  };
 
-const ExpenseList = ({ expenses }) => {
-    return (
-        <ul>
-            {expenses.map((expense, index) => (
-                <li key={index}>{expense.description}: ${expense.amount}</li>
-            ))}
-        </ul>
-    );
-};
+  return (
+    <div className="App">
+      <h1>Expense Tracker</h1>
+      <form onSubmit={addExpense}>
+        <input
+          type="text"
+          placeholder="Description"
+          value={newExpense.description}
+          onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
+          required
+        />
+        <input
+          type="number"
+          placeholder="Amount"
+          value={newExpense.amount}
+          onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+          required
+        />
+        <button type="submit">Add Expense</button>
+      </form>
+      <ul>
+        {expenses.map((expense, index) => (
+          <li key={index}>{expense.description}: ${expense.amount}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default App;
